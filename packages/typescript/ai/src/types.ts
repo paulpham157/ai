@@ -3,6 +3,7 @@ import type {
   StandardSchemaV1,
 } from '@standard-schema/spec'
 import type { InternalLogger } from './logger/internal-logger'
+import type { SystemPrompt } from './system-prompts'
 import type {
   BaseEvent as AGUIBaseEvent,
   CustomEvent as AGUICustomEvent,
@@ -729,7 +730,21 @@ export interface TextOptions<
   model: string
   messages: Array<ModelMessage>
   tools?: Array<Tool<any, any, any>>
-  systemPrompts?: Array<string>
+  /**
+   * System prompts to include with the request.
+   *
+   * Accepts plain strings (the common case) or `{ content, metadata }`
+   * objects that let providers attach typed metadata (e.g. Anthropic
+   * `cache_control` for prompt caching) per prompt. At the chat call site
+   * the adapter narrows `metadata`'s type via `~types['systemPromptMetadata']`
+   * — providers that don't declare one default to `never`, which makes the
+   * field carry no meaningful value (TypeScript will only accept
+   * `undefined` there). Provider-foreign metadata that reaches an adapter
+   * via JS / `as any` is silently dropped, never written to the wire.
+   *
+   * @see SystemPrompt
+   */
+  systemPrompts?: Array<SystemPrompt>
   agentLoopStrategy?: AgentLoopStrategy
   /**
    * Controls the randomness of the output.

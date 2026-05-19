@@ -104,6 +104,10 @@ export type {
 // All types
 export * from './types'
 
+// System prompts (type + normaliser used by adapters)
+export type { SystemPrompt, NormalizedSystemPrompt } from './system-prompts'
+export { normalizeSystemPrompts } from './system-prompts'
+
 // Utility functions
 export { detectImageMimeType } from './utils'
 

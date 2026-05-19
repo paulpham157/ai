@@ -372,9 +372,29 @@ export function otelMiddleware(options: OtelMiddlewareOptions): ChatMiddleware {
         state.assistantTextBufferTruncated = false
 
         if (captureContent) {
+          const systemPromptContents = config.systemPrompts.map((p) =>
+            typeof p === 'string' ? p : p.content,
+          )
+          // Anthropic prompt-caching users need to know which prompt carried
+          // `cache_control`: it's the one attribute that explains cache
+          // hit/miss in observability. Serialise per-prompt metadata as a
+          // single JSON span attribute so backends that don't understand
+          // GenAI events can still surface it. Kept off span events to
+          // avoid breaking the one-event-per-message GenAI semconv contract.
+          const systemPromptMetadata = config.systemPrompts.map((p) =>
+            typeof p === 'string' || p.metadata === undefined
+              ? null
+              : p.metadata,
+          )
+          if (systemPromptMetadata.some((m) => m !== null)) {
+            iterSpan.setAttribute(
+              'tanstack.ai.system_prompt.metadata',
+              JSON.stringify(systemPromptMetadata),
+            )
+          }
           // Span events follow the original GenAI semconv (one event per
           // message). Backends that read events get content this way.
-          for (const sys of config.systemPrompts) {
+          for (const sys of systemPromptContents) {
             iterSpan.addEvent('gen_ai.system.message', {
               content: redactContent(sys),
             })
@@ -391,7 +411,7 @@ export function otelMiddleware(options: OtelMiddlewareOptions): ChatMiddleware {
           // (`gen_ai.input.messages`) — backends like PostHog read prompt
           // content from this attribute, not from span events.
           const inputMessages: Array<{ role: string; content: string }> = []
-          for (const sys of config.systemPrompts) {
+          for (const sys of systemPromptContents) {
             inputMessages.push({
               role: 'system',
               content: redactContent(sys),
