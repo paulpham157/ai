@@ -26,7 +26,7 @@ import { z } from "zod";
 const Person = z.object({ name: z.string(), age: z.number() });
 
 const person = await chat({
-  adapter: openaiText("gpt-5.2"),
+  adapter: openaiText("gpt-5.5"),
   messages: [{ role: "user", content: "John Doe, 30" }],
   outputSchema: Person,
 });
@@ -37,7 +37,7 @@ person.age;  // number
 
 ## Schema Libraries
 
-TanStack AI accepts any library that implements [Standard JSON Schema](https://standardschema.dev/):
+TanStack AI accepts any library that implements [Standard JSON Schema](https://standardschema.dev/json-schema):
 
 - [Zod](https://zod.dev/) (v4.2+)
 - [ArkType](https://arktype.io/)
@@ -66,7 +66,7 @@ Pick the journey that matches what you're building. The four guides under "Struc
 
 | You want to… | Read |
 |---|---|
-| Extract one structured object from a single prompt (script, server endpoint, CLI) | [One-Shot Extraction](./one-shot) |
+| Extract one structured object from a single prompt — and consume it server-side (script, endpoint, CLI) or in a browser via `final` | [One-Shot Extraction](./one-shot) |
 | Build a UI that fills in field-by-field as the model streams (progressive form, live card, typewriter preview) | [Streaming UIs](./streaming) |
 | Let users iterate on a structured object across multiple turns — each turn produces a new typed object and history stays renderable | [Multi-Turn Chat](./multi-turn) |
 | Combine structured output with tool calls (agent loop that runs tools first, then returns a typed object) | [With Tools](./with-tools) |

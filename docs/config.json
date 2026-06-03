@@ -194,12 +194,25 @@
       ]
     },
     {
-      "label": "Advanced",
+      "label": "Middleware",
       "children": [
         {
           "label": "Middleware",
           "to": "advanced/middleware"
         },
+        {
+          "label": "Built-in Middleware",
+          "to": "advanced/built-in-middleware"
+        },
+        {
+          "label": "OpenTelemetry",
+          "to": "advanced/otel"
+        }
+      ]
+    },
+    {
+      "label": "Advanced",
+      "children": [
         {
           "label": "Runtime Context",
           "to": "advanced/runtime-context"
@@ -207,14 +220,6 @@
         {
           "label": "Debug Logging",
           "to": "advanced/debug-logging"
-        },
-        {
-          "label": "OpenTelemetry",
-          "to": "advanced/otel"
-        },
-        {
-          "label": "Observability",
-          "to": "advanced/observability"
         },
         {
           "label": "Multimodal Content",

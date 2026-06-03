@@ -57,20 +57,20 @@ This article compares the two SDKs from TanStack AI's perspective, with honest a
 
 When you select a provider and model, TypeScript narrows the exact options, capabilities, and input modalities available for that specific model - not a union of everything the provider supports.
 
-Each provider adapter contains a comprehensive `model-meta.ts` that maps every model to its capabilities: supported input modalities, context windows, and provider-specific options. When you write `openaiText('gpt-5.2')`, the type system knows exactly what that model can do.
+Each provider adapter contains a comprehensive `model-meta.ts` that maps every model to its capabilities: supported input modalities, context windows, and provider-specific options. When you write `openaiText('gpt-5.5')`, the type system knows exactly what that model can do.
 
 ```ts
 import { chat } from '@tanstack/ai'
 import { openaiText } from '@tanstack/ai-openai'
 
-// TypeScript knows gpt-5.2 supports text + image input
+// TypeScript knows gpt-5.5 supports text + image input
 const stream = chat({
-  adapter: openaiText('gpt-5.2'),
+  adapter: openaiText('gpt-5.5'),
   messages: [{
     role: 'user',
     content: [
-      { type: 'text', text: 'What is in this image?' },
-      { type: 'image', url: 'https://example.com/photo.jpg' },
+      { type: 'text', content: 'What is in this image?' },
+      { type: 'image', source: { type: 'url', url: 'https://example.com/photo.jpg' } },
     ],
   }],
 })
@@ -145,7 +145,7 @@ import { chat, maxIterations, untilFinishReason, combineStrategies } from '@tans
 import { openaiText } from '@tanstack/ai-openai'
 
 const stream = chat({
-  adapter: openaiText('gpt-5.2'),
+  adapter: openaiText('gpt-5.5'),
   messages,
   tools,
   agentLoopStrategy: combineStrategies([
@@ -290,7 +290,7 @@ const logger: ChatMiddleware = {
 }
 
 const stream = chat({
-  adapter: openaiText('gpt-5.2'),
+  adapter: openaiText('gpt-5.5'),
   messages,
   middleware: [logger],
 })
@@ -310,7 +310,11 @@ The available hooks cover the full lifecycle:
 
 Middleware compose naturally. `onConfig` pipes through each middleware in order. `onChunk` pipes chunks through each middleware (if one drops a chunk, later middleware never see it). `onBeforeToolCall` uses first-win semantics: the first middleware that returns a decision short-circuits the rest.
 
-TanStack AI also ships `toolCacheMiddleware` built-in, which caches tool results by name and arguments with configurable TTL, LRU eviction, and pluggable storage backends (Redis, localStorage, etc.).
+TanStack AI also ships `toolCacheMiddleware` built-in (imported from the `@tanstack/ai/middlewares` subpath), which caches tool results by name and arguments with configurable TTL, LRU eviction, and pluggable storage backends (Redis, localStorage, etc.).
+
+```ts
+import { toolCacheMiddleware } from '@tanstack/ai/middlewares'
+```
 
 Vercel AI SDK takes a different approach: `wrapLanguageModel()` wraps a model instance with middleware that can intercept and transform calls. It ships several built-in middleware (`extractReasoningMiddleware`, `simulateStreamingMiddleware`, `defaultSettingsMiddleware`), but these operate at the model level rather than the application level. There's no equivalent to TanStack AI's tool call interception, chunk-level stream processing, or lifecycle hooks like `onBeforeToolCall` and `onAfterToolCall`.
 
@@ -487,7 +491,7 @@ The TanStack approach separates the tool contract from its implementation, makin
 import { chat, combineStrategies, maxIterations, untilFinishReason } from '@tanstack/ai'
 
 const stream = chat({
-  adapter: openaiText('gpt-5.2'),
+  adapter: openaiText('gpt-5.5'),
   messages,
   tools,
   agentLoopStrategy: combineStrategies([
