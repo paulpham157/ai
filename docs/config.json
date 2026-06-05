@@ -86,6 +86,22 @@
         {
           "label": "Lazy Tool Discovery",
           "to": "tools/lazy-tool-discovery"
+        },
+        {
+          "label": "MCP Server Tools",
+          "to": "tools/mcp"
+        },
+        {
+          "label": "Managed MCP with chat()",
+          "to": "tools/mcp-managed"
+        },
+        {
+          "label": "Manual MCP: Tools, Resources & Prompts",
+          "to": "tools/mcp-manual"
+        },
+        {
+          "label": "MCP Type Generation",
+          "to": "tools/mcp-codegen"
         }
       ]
     },
